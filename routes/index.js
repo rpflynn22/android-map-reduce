@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
+
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -38,4 +40,17 @@ router.post('/adduser', function(req, res) {
   });
 });
 
+/* GET add file page. */
+router.get('/newfile', function(req, res) {
+  res.render('newfile', { title: 'Upload File' });
+});
+
+/* POST for uploading the selected file. */
+router.post('/uploadfile', function(req, res) {
+  fs.readFile(req.files.fileForCount.path, function (err, data) {
+    res.write(data);
+    res.end();
+  });
+});
+ 
 module.exports = router;

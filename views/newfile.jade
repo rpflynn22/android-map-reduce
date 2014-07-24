@@ -2,6 +2,6 @@ extends layout
 
 block content
   h1= title
-  form#formNewFile(action="/newfile", method="post", enctype="multipart/form-data")
+  form#formNewFile(action="/uploadfile", method="post", enctype="multipart/form-data")
     input#inputNewFile(type="file", name="fileForCount")
     button#btnSubmit(type="submit") submit
