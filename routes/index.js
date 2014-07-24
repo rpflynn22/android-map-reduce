@@ -17,10 +17,14 @@ router.get('/helloworld', function(req, res) {
 router.get('/userlist', function(req, res) {
   var db = req.db;
   var collection = db.get('usercollection');
-  collection.find({}, {}, function(e, docs) {
-    res.render('userlist', {
-      'userlist': docs
-    });
+  collection.find({}, {fields:{android_id:0}}, function(e, docs) {
+    var idarr = new Array();
+    for (i = 0; i < docs.length; i++) {
+      idarr.push(docs[i]._id);
+    }
+    idarr.sort();
+    res.write(idarr.toString());
+    res.end();
   });
 });
 
@@ -52,5 +56,39 @@ router.post('/uploadfile', function(req, res) {
     res.end();
   });
 });
+
+/* GET for reading files. */
+router.get('/readfile', function(req, res) {
+  fs.readdir('./uploads/', function(err, files) {
+    if (files.length == 0) {
+      res.write("");
+      res.end();
+    } else {
+      // DO STUFF!!!!
+      var droid_id = req.param("android_id");
+      var db = req.db;
+      var collection = db.get('usercollection');
+      collection.find({}, {fields:{android_id:0}}, function(err, results) {
+        var idarr = Array();
+        for (i = 0; i < results.length; i++) {
+          idarr.push(results[i]._id.toString());
+        }
+        idarr.sort();
+        collection.find({android_id:droid_id}, {fields:{android_id:0}}, function(err, target) {
+          var index = idarr.indexOf(target[0]._id.toString());
+          res.write(idarr.toString() + "\n");
+          res.write(target[0]._id + "\n");
+          res.write(index + "\n");
+          res.end();
+        });
+      });        
+    }
+  });
+});
  
 module.exports = router;
+
+
+
+
+
