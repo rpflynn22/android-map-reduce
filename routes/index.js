@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var mongodb = require('mongodb');
-var MongoClient = mongodb.MongoClient;
 
-var MONGOHQ_URL = "mongodb://rpflynn22@gmail.com:Keane4fun@kahana.mongohq.com:10084/phone-map-reduce";
+var connectionUri = url.parse(process.env.MONGOHQ_URL);
+var dbName = connectionUri.pathname.replace(/^\//, '');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
 
 /* GET Hello World page. */
 router.get('/helloworld', function(req, res) {
-  MongoClient.connect(MONGOHQ_URL, function(err, db) {
+  mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
     var collection = db.collection('test');
     console.log('removing documents...');
     collection.remove(function(err, result) {
