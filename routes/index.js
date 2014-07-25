@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 
+var mongoUri = process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL ||
+  'mongodb://localhost/mydb';
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -15,9 +18,16 @@ router.get('/helloworld', function(req, res) {
 
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
-  var db = req.db;
-  var collection = db.get('usercollection');
-  collection.find({}, {fields:{android_id:0}}, function(e, docs) {
+  mongo.Db.connect(mongoUri, (function(err, db) {
+    db.collection('usercollection', function(er, collection) {
+      collection.insert({"android_id":"123456"}, {safe: true}, func(e, rs)) {
+        res.write("inserted");
+        res.end();
+      });
+    });
+  });
+});
+/*  collection.find({}, {fields:{android_id:0}}, function(e, docs) {
     var idarr = new Array();
     for (i = 0; i < docs.length; i++) {
       idarr.push(docs[i]._id);
@@ -26,7 +36,7 @@ router.get('/userlist', function(req, res) {
     res.write(idarr.toString());
     res.end();
   });
-});
+});*/
 
 /* GET new user page. */
 router.get('/newuser', function(req, res) {

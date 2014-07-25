@@ -13,6 +13,10 @@ var users = require('./routes/users');
 
 var app = express();
 
+var mongoUri = process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL ||
+  'mongodb://localhost/mydb';
+
 app.set('port', process.env.PORT || 3000);
 
 // view engine setup
