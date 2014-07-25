@@ -28,12 +28,23 @@ router.post('/uploadfile', function(req, res) {
 /* GET for android devices to sign up. Should probably be a post. */
 router.get('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
-    var collection = db.collection('phone-users');
+    client.collectionNames(function(error, names) {
+      var collection = new mongodb.Collection(client, lastCollection);
+      var documents = collection.find({}, {limit:5});
+      documents.toArray(function(err, docs) {
+        docs.forEach(function(doc) {
+          res.write(JSON.stringify(doc) + "\n");
+        });
+      });
+    });
+  });
+});
+   /* var collection = db.collection('phone-users');
     var droid_id = req.param('android_id');
     collection.find(function(err, result) {
       res.write(JSON.stringify(result));
       res.end();
-    });/*
+    });
     collection.find({android_id: droid_id}, {fields:{_id:0}}, function(err, doc) {
       res.write(JSON.stringify(doc));
       res.write(typeof doc)
@@ -48,9 +59,9 @@ router.get('/signup', function(req, res) {
       } else {
         res.end("id exists");
       }
-    });*/
+    });
   });
-});  
+});  */
 
 /* GET for reading files. */
 router.get('/readfile', function(req, res) {
