@@ -65,6 +65,7 @@ router.get('/readfile', function(req, res) {
       res.end();
     } else {
       // DO STUFF!!!!
+      var filepath = "./uploads/" + files[0];
       var droid_id = req.param("android_id");
       var db = req.db;
       var collection = db.get('usercollection');
@@ -76,10 +77,18 @@ router.get('/readfile', function(req, res) {
         idarr.sort();
         collection.find({android_id:droid_id}, {fields:{android_id:0}}, function(err, target) {
           var index = idarr.indexOf(target[0]._id.toString());
-          res.write(idarr.toString() + "\n");
-          res.write(target[0]._id + "\n");
-          res.write(index + "\n");
-          res.end();
+          fs.readFile(filepath, function(err, data) {
+            if (err) throw err;
+            var linesArray = String(data).split("\n");
+            var linesPerPhone = Math.floor(linesArray.length / idarr.length);
+            var rem = linesArray.length % idarr.length;
+            var myStartLine = index * linesPerPhone;
+            if (index == (idarr.length - 1)) linesPerPhone += rem;
+            var specLines = linesArray.slice(myStartLine, myStartLine + linesPerPhone);
+            var output = specLines.join("\n");
+            res.write(output);
+            res.end();
+          });
         });
       });        
     }
