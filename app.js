@@ -1,4 +1,5 @@
 var express = require('express');
+var collection = db.get('usercollection');
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
@@ -13,9 +14,7 @@ var users = require('./routes/users');
 
 var app = express();
 
-var mongoUri = process.env.MONGOLAB_URI ||
-  process.env.MONGOHQ_URL ||
-  'mongodb://localhost/mydb';
+var MONGOHQ_URL = "mongodb://rpflynn22@gmail.com:Keane4fun@kahana.mongohq.com:10084/phone-map-reduce";
 
 app.set('port', process.env.PORT || 3000);
 

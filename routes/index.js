@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
 
-var mongoUri = process.env.MONGOLAB_URI ||
-  process.env.MONGOHQ_URL ||
-  'mongodb://localhost/mydb';
+var MONGOHQ_URL = "mongodb://rpflynn22@gmail.com:Keane4fun@kahana.mongohq.com:10084/phone-map-reduce";
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -13,7 +13,24 @@ router.get('/', function(req, res) {
 
 /* GET Hello World page. */
 router.get('/helloworld', function(req, res) {
-  res.render('helloworld', { title: 'Hello, World!' })
+  MongoClient.connect(MONGOHQ_URL, function(err, db) {
+    var collection = db.collection('test');
+    console.log('removing documents...');
+    collection.remove(function(err, result) {
+      if (err) return console.error(err);
+      console.log('collection cleared!');
+      console.log('inserting new docs');
+      collection.insert([{name: 'tester'}, {name: 'coder'}], function(err, docs) {
+        if (err) return console.error(err);
+        console.log('just inserted ', docs.length, ' new docs!');
+        collection.find({}, {}, function(err, docs) {
+          if (err) return console.error(err);
+          res.write(JSON.stringify(docs));
+          res.end();
+        });
+      });
+    });
+  });
 });
 
 /* GET Userlist page. */
