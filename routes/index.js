@@ -28,15 +28,20 @@ router.post('/uploadfile', function(req, res) {
 /* GET for android devices to sign up. Should probably be a post. */
 router.get('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
-    db.collectionNames(function(error, names) {
-      var lastCollection = null;
-      var collection = new mongodb.Collection(db, lastCollection);
-      var documents = collection.find({}, {limit:5});
-      documents.toArray(function(err, docs) {
-        docs.forEach(function(doc) {
-          res.write(JSON.stringify(doc) + "\n");
+    var collection = new mongodb.Collection(db, 'phone-users');
+    var droid_id = req.param('android_id');
+    var documents = collection.find({android_id: droid_id}, {});
+    documents.toArray(function(err, docs) {
+      if (docs.length == 0) {
+        collection.insert({android_id: droid_id}, function(err, result) {
+          if (err) {
+            return console.error(err);
+          }
+          res.send(200);
         });
-      });
+      } else {
+          res.end('id already exists');
+      }
     });
   });
 });
