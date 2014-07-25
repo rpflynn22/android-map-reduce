@@ -32,6 +32,7 @@ router.get('/signup', function(req, res) {
     var droid_id = req.param('android_id');
     collection.find({android_id: droid_id}, {fields:{_id:0}}, function(err, doc) {
       res.write(JSON.stringify(doc));
+      res.write(String(doc.length));
       if (doc.length == 0) {
         collection.insert({android_id: droid_id}, function(err, result) {
           if (err) {
