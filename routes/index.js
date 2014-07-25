@@ -29,6 +29,7 @@ router.post('/uploadfile', function(req, res) {
 router.get('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
     db.collectionNames(function(error, names) {
+      var lastCollection = null;
       var collection = new mongodb.Collection(db, lastCollection);
       var documents = collection.find({}, {limit:5});
       documents.toArray(function(err, docs) {
