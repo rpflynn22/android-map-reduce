@@ -45,29 +45,6 @@ router.get('/signup', function(req, res) {
     });
   });
 });
-   /* var collection = db.collection('phone-users');
-    var droid_id = req.param('android_id');
-    collection.find(function(err, result) {
-      res.write(JSON.stringify(result));
-      res.end();
-    });
-    collection.find({android_id: droid_id}, {fields:{_id:0}}, function(err, doc) {
-      res.write(JSON.stringify(doc));
-      res.write(typeof doc)
-      //res.write(String(doc.length);
-      if (doc.length == 0) {
-        collection.insert({android_id: droid_id}, function(err, result) {
-          if (err) {
-            return console.error(err);
-          }
-          res.send(200);
-        });
-      } else {
-        res.end("id exists");
-      }
-    });
-  });
-});  */
 
 /* GET for reading files. */
 router.get('/readfile', function(req, res) {
@@ -107,6 +84,30 @@ router.get('/readfile', function(req, res) {
     }
   });
 });
+
+/* Post request to read list of keyvals from android map. */
+router.post('/mapresponse', function(req, res) {
+  var keyvals = req.param('keyvals');
+  res.write(keyvals + '\n');
+  var droid_id = req.param('android_id');
+  mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
+    var collection = new mongodb.Collection(db, 'map-key-vals');
+    var lines = keyvals.split("\n");
+    res.write(lines.toString() + "\n");
+    for (i = 0; i < lines.length; i++) {
+      var linearr = lines[i].split("\t");
+      var key = linearr[0];
+      var val = linearr[1];
+      collection.insert({android_id: droid_id, word: key, count: val}, function(err, result) {
+        if (err) return console.error(err);
+      });
+    }
+    var dist = collection.find({}, {}, function(err, result) {});
+    var distar = dist.toArray();
+    console.log(distar.length);
+  });
+});
+    
  
 module.exports = router;
 
