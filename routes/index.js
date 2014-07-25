@@ -33,7 +33,7 @@ router.get('/helloworld', function(req, res) {
   });
 });
 
-/* GET Userlist page. */
+/* GET Userlist page. 
 router.get('/userlist', function(req, res) {
   mongo.Db.connect(mongoUri, (function(err, db) {
     db.collection('usercollection', function(er, collection) {
@@ -43,7 +43,7 @@ router.get('/userlist', function(req, res) {
       });
     });
   });
-});
+});*/
 /*  collection.find({}, {fields:{android_id:0}}, function(e, docs) {
     var idarr = new Array();
     for (i = 0; i < docs.length; i++) {
