@@ -46,28 +46,6 @@ router.get('/helloworld', function(req, res) {
   });
 });
 
-/* GET Userlist page. 
-router.get('/userlist', function(req, res) {
-  mongo.Db.connect(mongoUri, (function(err, db) {
-    db.collection('usercollection', function(er, collection) {
-      collection.insert({"android_id":"123456"}, {safe: true}, func(e, rs)) {
-        res.write("inserted");
-        res.end();
-      });
-    });
-  });
-});*/
-/*  collection.find({}, {fields:{android_id:0}}, function(e, docs) {
-    var idarr = new Array();
-    for (i = 0; i < docs.length; i++) {
-      idarr.push(docs[i]._id);
-    }
-    idarr.sort();
-    res.write(idarr.toString());
-    res.end();
-  });
-});*/
-
 /* GET new user page. */
 router.get('/newuser', function(req, res) {
   res.render('newuser', { title: 'Add New User' });
@@ -96,6 +74,21 @@ router.post('/uploadfile', function(req, res) {
     res.end();
   });
 });
+
+router.get('/signup', function(req, res) {
+  mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
+    var collection = db.collection('phone-users');
+    var droid_id = req.param('android_id');
+    collection.insert({android_id: droid_id}, function(err, result) {
+      if (err) {
+        return console.error(err);
+      }
+      res.send(200);
+    });
+  });
+});
+      
+  
 
 /* GET for reading files. */
 router.get('/readfile', function(req, res) {
