@@ -13,7 +13,12 @@
     "body-parser": "~1.0.0",
     "debug": "~0.7.4",
     "jade": "~1.3.0",
-    "mongodb": "*",
-    "monk": "*"
+    "mongodb": "~1.4.7",
+    "monk": "*",
+    "multer": "~0.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jane-doe/node-example.git"
   }
 }
