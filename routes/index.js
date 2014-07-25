@@ -28,7 +28,7 @@ router.post('/uploadfile', function(req, res) {
 /* GET for android devices to sign up. Should probably be a post. */
 router.get('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
-    client.collectionNames(function(error, names) {
+    db.collectionNames(function(error, names) {
       var collection = new mongodb.Collection(client, lastCollection);
       var documents = collection.find({}, {limit:5});
       documents.toArray(function(err, docs) {
