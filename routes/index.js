@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var mongodb = require('mongodb');
+var url = require('url');
 
 var connectionUri = url.parse(process.env.MONGOHQ_URL);
 var dbName = connectionUri.pathname.replace(/^\//, '');
