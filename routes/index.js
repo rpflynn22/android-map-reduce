@@ -4,7 +4,7 @@ var fs = require('fs');
 var mongodb = require('mongodb');
 var url = require('url');
 
-var connectionUri = url.parse(String(process.env.MONGOHQ_URL));
+var connectionUri = url.parse(process.env['MONGOHQ_URL']);
 var dbName = connectionUri.pathname.replace(/^\//, '');
 
 /* GET home page. */
