@@ -1,5 +1,5 @@
 var express = require('express');
-var collection = db.get('usercollection');
+//var collection = db.get('usercollection');
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
