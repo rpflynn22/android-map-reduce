@@ -30,6 +30,7 @@ router.get('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
     var collection = db.collection('phone-users');
     console.log(typeof req.param('android_id'));
+    console.log("hello there");
     var droid_id =String(req.param('android_id'));
     collection.find({android_id: droid_id}, {fields:{_id:0}}, function(err, doc) {
       res.write(JSON.stringify(doc));
