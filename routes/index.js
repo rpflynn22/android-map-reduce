@@ -18,14 +18,26 @@ router.get('/helloworld', function(req, res) {
     var collection = db.collection('test');
     console.log('removing documents...');
     collection.remove(function(err, result) {
-      if (err) return console.error(err);
+      if (err) {
+        res.write("first level error");
+        res.end();
+        return console.error(err);
+      }
       console.log('collection cleared!');
       console.log('inserting new docs');
       collection.insert([{name: 'tester'}, {name: 'coder'}], function(err, docs) {
-        if (err) return console.error(err);
+        if (err) {
+          res.write("second level error");
+          res.end();
+          return console.error(err);
+        }
         console.log('just inserted ', docs.length, ' new docs!');
         collection.find({}, {}, function(err, docs) {
-          if (err) return console.error(err);
+          if (err) {
+            res.write("third level error");
+            res.end();
+            return console.error(err);
+          }
           res.write(JSON.stringify(docs));
           res.end();
         });
