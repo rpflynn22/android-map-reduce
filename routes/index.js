@@ -62,13 +62,10 @@ router.get('/readfile', function(req, res) {
           for (i = 0; i < result.length; i++) {
             idarr.push(result[i].toString());
           }
-          console.log('idarr ', idarr);
           idarr.sort();
           var thisDevice = collection.find({android_id:droid_id}, {fields:{android_id:0}});
           thisDevice.toArray(function(err, result) {
-            console.log("thisdevice ", result[0]._id);
             var index = idarr.indexOf(result[0]._id.toString());
-            console.log(index);
             fs.readFile(filepath, function(err, data) {
               if (err) throw err;
               var linesArray = String(data).split('\n');
@@ -109,11 +106,11 @@ router.post('/mapresponse', function(req, res) {
     collection.distinct('android_id', function(err, result) {
       var numReturned = result.length;
       var phoneCollection = new mongodb.Collection(db, 'phone-users');
-      phoneCollection.count(function(err, num) {
-        if (num == numReturned) {
+      var allPhones = phoneCollection.distinct('android_id', function(err, phoneList) {
+        if (phoneList.length == numReturned) {
+          console.log('phone list ', phoneList);
           var words = collection.find({}, {fields:{word:1, count:1}});
           words.toArray(function(err, keyValArray) {
-            console.log(keyValArray);
             var reduceInput = {};
             for (i = 0; i < keyValArray.length; i++) {
               if (reduceInput[keyValArray[i].word] != undefined) {
@@ -122,10 +119,23 @@ router.post('/mapresponse', function(req, res) {
                 reduceInput[keyValArray[i].word] = [parseInt(keyValArray[i].count)];
               }
             }
-            console.log(reduceInput);
+            console.log('reduceInput ', reduceInput);
+            var wordList = Object.getOwnPropertyNames(reduceInput);
+            console.log('wordlist ', wordList);
+            var numWords = wordList.length;
+            var reduceInputDb = new mongodb.Collection(db, 'reduce-input');
+            for (i = 0; i < phoneList.length; i++) {
+              var bottom = i * Math.floor(numWords / phoneList.length);
+              var upper = bottom + Math.floor(numWords / phoneList.length);
+              if (i == phoneList.length - 1) upper += numWords % phoneList.length;
+              for (j = bottom; j < upper; j++) {
+                reduceInputDb.insert({android_id: phoneList[i], word: wordList[j], vals: reduceInput[wordList[j]]}, function(err, result) {
+                  if (err) return console.error(err);
+                });
+              }
+            }
           });
         } else {
-          console.log('else');
         }
       });
     });
