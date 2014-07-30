@@ -1,1 +1,3 @@
 /data/journal*
+uploads/*
+!uploads/*.md

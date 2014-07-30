@@ -15,8 +15,7 @@
     "jade": "~1.3.0",
     "mongodb": "~1.4.7",
     "monk": "*",
-    "multer": "~0.1.3",
-    "underscore": "~1.6.0"
+    "multer": "~0.1.3"
   },
   "repository": {
     "type": "git",
