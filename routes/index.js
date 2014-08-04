@@ -135,9 +135,36 @@ router.post('/mapresponse', function(req, res) {
               }
             }
           });
-        } else {
         }
       });
+    });
+  });
+});
+
+router.get('/reduce-input', function(req, res) {
+  mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
+    if (err) return console.error(err);
+    var collection = new mongodb.Collection(db, 'reduce-input');
+    var wordsThisPhone = collection.find({android_id: req.param('android_id')}, {});
+    wordsThisPhone.toArray(function(err, redInputCol) {
+      if (err) return console.error(err);
+      for (i = 0; i < redInputCol.length; i++) {
+        var record = redInputCol[i];
+        var word = record['word'];
+        var vals = record['vals'];
+        if (vals.length == 1) {
+          var counts = vals;
+        } else {
+          var counts = "";
+          for (j = 0; j < vals.length; j++) {
+            console.log("here: val " + vals[i]);
+            counts += String(vals[i]) + " ";
+          }
+        }
+        console.log('counts ' + counts);
+        res.write(word + '\t' + counts + '\n');
+      }
+      res.end();
     });
   });
 });
