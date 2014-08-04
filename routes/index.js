@@ -168,6 +168,42 @@ router.get('/reduce-input', function(req, res) {
     });
   });
 });
+
+router.post('/reduce-response', function(req, res) {
+  var keyvals = req.param('keyvals');
+  var droid_id = req.param('android_id');
+  var lines = keyvals.split('\n');
+  mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
+    var collection = new mongodb.Collection(db, 'reduce-key-vals');
+    for (i = 0; i < lines.length; i++) {
+      collection.insert({android_id: droid_id, word: lines[0], count: lines[1]}, function(err, val) {
+        if (err) return console.error(err);
+      });
+    }
+  });
+});
+
+router.get('/see-result', function(req, res) {
+  mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
+    var user_collection = new mongodb.Collection(db, 'phone-users');
+    user_collection.distinct('android_id', function(err, phone_ids) {
+      if (err) return console.error(err);
+      var num_phones = phone_ids.length;
+      var reduce_result_collection = new mongodb.Collection(db, 'reduce-key-vals');
+      reduce_result_collection.distinct('android_id', function(err, reduced_android_ids) {
+        var num_reduced_phones = reduced_android_ids.length;
+        if (num_reduced_phones == num_phones) {
+          var reduced_docs = reduce_result_collection.find({}, {});
+          reduced_docs.toArray(function(err, docs) {
+            if (err) return console.error(err);
+            // render the results
+        } else {
+          res.render('not_ready_result', {num_not_ready: (num_phones - num_reduced_phones)});
+        }
+      });
+    });
+  });
+});
     
  
 module.exports = router;
