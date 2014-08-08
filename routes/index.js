@@ -176,7 +176,8 @@ router.post('/reduce-response', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
     var collection = new mongodb.Collection(db, 'reduce-key-vals');
     for (i = 0; i < lines.length; i++) {
-      collection.insert({android_id: droid_id, word: lines[0], count: lines[1]}, function(err, val) {
+      var fields = lines[i].split('\t');
+      collection.insert({android_id: droid_id, word: fields[0], count: fields[1]}, function(err, val) {
         if (err) return console.error(err);
       });
     }
@@ -193,16 +194,26 @@ router.get('/see-result', function(req, res) {
       reduce_result_collection.distinct('android_id', function(err, reduced_android_ids) {
         var num_reduced_phones = reduced_android_ids.length;
         if (num_reduced_phones == num_phones) {
+          var wordKeyVals = [];
           var reduced_docs = reduce_result_collection.find({}, {});
           reduced_docs.toArray(function(err, docs) {
             if (err) return console.error(err);
             // render the results
+            for (i = 0; i < docs.length; i++) {
+              wordKeyVals.push([docs[i]["word"], docs[i]["count"]]);
+            }
+            res.render('see-result', {wordcount: wordKeyVals});
+          });
         } else {
-          res.render('not_ready_result', {num_not_ready: (num_phones - num_reduced_phones)});
+          res.render('not-ready-result', {num_not_ready: (num_phones - num_reduced_phones)});
         }
       });
     });
   });
+});
+
+router.get('/not-ready-result', function(req, res) {
+  res.render('not-ready-result');
 });
     
  

@@ -6,3 +6,38 @@ body {
 a {
   color: #00B7FF;
 }
+
+#not-ready-body {
+  background-color: #cf0101;
+  color: #fe8080;
+}
+
+#not-ready-container {
+  width: 750px;
+  height: 200px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+#not-ready-words {
+  font-weight: bold;
+  font-size: 50px;
+  height: 100px;
+  width: 750px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#not-ready-explanation {
+  font-size: 35px;
+  width: 750px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
