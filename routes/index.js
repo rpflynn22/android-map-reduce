@@ -9,7 +9,7 @@ var dbName = connectionUri.pathname.replace(/^\//, '');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Androop: WordCount' });
 });
 
 /* GET add file page. */
