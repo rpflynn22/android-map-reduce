@@ -25,6 +25,11 @@ router.post('/uploadfile', function(req, res) {
   });
 });
 
+/* POST to reset all of the data stored: file saved + all 4 dbs. */
+router.post('/clear-data', function(req, res) {
+  
+});
+
 /* GET for android devices to sign up. Should probably be a post. */
 router.post('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
