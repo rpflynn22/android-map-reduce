@@ -26,7 +26,7 @@ router.post('/uploadfile', function(req, res) {
 });
 
 /* GET for android devices to sign up. Should probably be a post. */
-router.get('/signup', function(req, res) {
+router.post('/signup', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
     var collection = new mongodb.Collection(db, 'phone-users');
     var droid_id = req.param('android_id');
@@ -139,32 +139,47 @@ router.post('/mapresponse', function(req, res) {
       });
     });
   });
+  res.send(200);
 });
 
+/* GET to read the input keyvals for the reduce phase in the phones. */
 router.get('/reduce-input', function(req, res) {
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
     if (err) return console.error(err);
     var collection = new mongodb.Collection(db, 'reduce-input');
-    var wordsThisPhone = collection.find({android_id: req.param('android_id')}, {});
-    wordsThisPhone.toArray(function(err, redInputCol) {
+    collection.distinct('android_id', function(err, distinctPhones) {
       if (err) return console.error(err);
-      for (i = 0; i < redInputCol.length; i++) {
-        var record = redInputCol[i];
-        var word = record['word'];
-        var vals = record['vals'];
-        if (vals.length == 1) {
-          var counts = vals;
+      var numPhones = distinctPhones.length;
+      var signedUpPhonesCollection = new mongodb.Collection(db, 'phone-users');
+      collection.distinct('android_id', function(err, signedUpPhones) {
+        if (err) return console.error(err);
+        var numPhonesSignedUp = signedUpPhones.length
+        if (numPhones == numPhonesSignedUp) {
+          var wordsThisPhone = collection.find({android_id: req.param('android_id')}, {});
+          wordsThisPhone.toArray(function(err, redInputCol) {
+            if (err) return console.error(err);
+            for (i = 0; i < redInputCol.length; i++) {
+              var record = redInputCol[i];
+              var word = record['word'];
+              var vals = record['vals'];
+              if (vals.length == 1) {
+                var counts = vals;
+              } else {
+                var counts = "";
+                for (j = 0; j < vals.length; j++) {
+                  console.log("here: val " + vals[i]);
+                  counts += String(vals[i]) + " ";
+                }
+              }
+              console.log('counts ' + counts);
+              res.write(word + '\t' + counts + '\n');
+            }
+            res.end();
+          });
         } else {
-          var counts = "";
-          for (j = 0; j < vals.length; j++) {
-            console.log("here: val " + vals[i]);
-            counts += String(vals[i]) + " ";
-          }
+          res.end();
         }
-        console.log('counts ' + counts);
-        res.write(word + '\t' + counts + '\n');
-      }
-      res.end();
+      });
     });
   });
 });
@@ -174,6 +189,7 @@ router.post('/reduce-response', function(req, res) {
   var droid_id = req.param('android_id');
   var lines = keyvals.split('\n');
   mongodb.Db.connect(process.env.MONGOHQ_URL, function(err, db) {
+    if (err) return console.error(err);
     var collection = new mongodb.Collection(db, 'reduce-key-vals');
     for (i = 0; i < lines.length; i++) {
       var fields = lines[i].split('\t');
@@ -182,6 +198,7 @@ router.post('/reduce-response', function(req, res) {
       });
     }
   });
+  res.send(200);
 });
 
 router.get('/see-result', function(req, res) {
@@ -193,7 +210,7 @@ router.get('/see-result', function(req, res) {
       var reduce_result_collection = new mongodb.Collection(db, 'reduce-key-vals');
       reduce_result_collection.distinct('android_id', function(err, reduced_android_ids) {
         var num_reduced_phones = reduced_android_ids.length;
-        if (num_reduced_phones == num_phones) {
+        if (num_reduced_phones == num_phones && num_reduced_phones > 0) {
           var wordKeyVals = [];
           var reduced_docs = reduce_result_collection.find({}, {});
           reduced_docs.toArray(function(err, docs) {
@@ -205,7 +222,7 @@ router.get('/see-result', function(req, res) {
             res.render('see-result', {wordcount: wordKeyVals});
           });
         } else {
-          res.render('not-ready-result', {num_not_ready: (num_phones - num_reduced_phones)});
+          res.render('not-ready-result');
         }
       });
     });

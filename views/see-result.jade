@@ -1,0 +1,9 @@
+doctype html
+html(lang="en")
+  head
+    title="page title"
+    script(type='text/javascript').
+  body
+    ul
+      each val in wordcount
+        li=val[0] + ": " + val[1]
