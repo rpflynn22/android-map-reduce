@@ -1,0 +1,44 @@
+package com.example.androidmapreduce;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Menu;
+
+public class ReduceActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_reduce);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.reduce, menu);
+		return true;
+	}
+
+	private class ReduceAnalytics extends AsyncTask<String, Void, Integer> {
+		public Integer doInBackground(String... args) {
+			String keyvals = args[0];
+			String android_id = args[1];
+			Map<String, Integer> finalMap = new HashMap<String, Integer>();
+			String[] lines = keyvals.split("\n");
+			for (String line : lines) {
+				String[] wordCountListStr = line.split("\t");
+				String word = wordCountListStr[0];
+				String[] counts = wordCountListStr[1].split(" ");
+				int sum = 0;
+				for (String count : counts) {
+					sum += Integer.parseInt(count);
+				}
+				finalMap.put(word, sum);
+			}
+		}
+	}
+}

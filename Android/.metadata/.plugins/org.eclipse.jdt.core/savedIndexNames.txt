@@ -1,0 +1,4 @@
+INDEX VERSION 1.126+C:\Users\Ryan\android-map-reduce\.metadata\.plugins\org.eclipse.jdt.core
+1911309843.index
+2233977704.index
+611044998.index
